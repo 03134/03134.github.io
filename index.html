@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Take a Picture with a Frame</title>
+	<title>Frame Camera</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style>
@@ -28,29 +28,31 @@
 </head>
 <body>
 	<header>
-		<h1>Take a Picture with a Frame</h1>
+		<h1>Frame Camera</h1>
 	</header>
 	<main>
-		<label for="image-select">Select an Image:</label>
-		<select id="image-select">
+		<label for="frame-select">Select a Frame:</label>
+		<select id="frame-select">
 			<option value="">-- Select --</option>
-			<option value="image1.png">Image 1</option>
-			<option value="image2.jpg">Image 2</option>
-			<option value="image3.jpg">Image 3</option>
+			<option value="frame1.png">Frame 1</option>
+			<option value="frame2.png">Frame 2</option>
+			<option value="frame3.png">Frame 3</option>
 		</select>
 		<div id="camera-container">
 			<video id="camera-view"></video>
 			<div id="frame-overlay"></div>
 		</div>
-		<button id="capture-btn">Take Picture</button>
+		<button id="capture-btn">Capture Picture</button>
 		<canvas id="picture-canvas"></canvas>
+		<a id="download-link" download="picture.png" href="#">Download Picture</a>
 	</main>
 	<script>
 		const cameraView = document.querySelector("#camera-view");
 		const captureBtn = document.querySelector("#capture-btn");
 		const pictureCanvas = document.querySelector("#picture-canvas");
 		const frameOverlay = document.querySelector("#frame-overlay");
-		const imageSelect = document.querySelector("#image-select");
+		const frameSelect = document.querySelector("#frame-select");
+		const downloadLink = document.querySelector("#download-link");
 		
 		const constraints = {
 			video: true
@@ -77,12 +79,14 @@
 			const context = pictureCanvas.getContext("2d");
 			context.drawImage(cameraView, 0, 0, pictureCanvas.width, pictureCanvas.height);
 			context.drawImage(frameOverlay, 0, 0, pictureCanvas.width, pictureCanvas.height);
+			downloadLink.href = pictureCanvas.toDataURL();
+			downloadLink.style.display = "inline-block";
 		}
 		
-		imageSelect.addEventListener("change", function() {
-			const imageUrl = this.value;
-			if (imageUrl) {
-				frameOverlay.style.backgroundImage = "url(" + imageUrl + ")";
+		frameSelect.addEventListener("change", function() {
+			const frameUrl = this.value;
+			if (frameUrl) {
+				frameOverlay.style.backgroundImage = "url(" + frameUrl + ")";
 			} else {
 				frameOverlay.style.backgroundImage = "none";
 			}
