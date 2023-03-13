@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Take a Picture with a Frame</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		#camera-view {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+		#frame-overlay {
+			position: absolute;
+			top: 10%;
+			left: 10%;
+			width: 80%;
+			height: 80%;
+			border: 2px solid black;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Take a Picture with a Frame</h1>
+	</header>
+	<main>
+		<div id="camera-container">
+			<video id="camera-view"></video>
+			<div id="frame-overlay"></div>
+		</div>
+		<button id="capture-btn">Take Picture</button>
+		<canvas id="picture-canvas"></canvas>
+	</main>
+	<script>
+		const cameraView = document.querySelector("#camera-view");
+		const captureBtn = document.querySelector("#capture-btn");
+		const pictureCanvas = document.querySelector("#picture-canvas");
+		const frameOverlay = document.querySelector("#frame-overlay");
+		
+		const constraints = {
+			video: true
+		};
+		
+		function startCamera() {
+			navigator.mediaDevices.getUserMedia(constraints)
+				.then(function(stream) {
+					cameraView.srcObject = stream;
+				})
+				.catch(function(error) {
+					console.error("Unable to access camera: " + error);
+				});
+		}
+		
+		function stopCamera() {
+			cameraView.srcObject.getTracks().forEach(function(track) {
+				track.stop();
+			});
+			cameraView.srcObject = null;
+		}
+		
+		function capturePicture() {
+			const context = pictureCanvas.getContext("2d");
+			context.drawImage(cameraView, 0, 0, pictureCanvas.width, pictureCanvas.height);
+			context.drawImage(frameOverlay, 0, 0, pictureCanvas.width, pictureCanvas.height);
+		}
+		
+		startCamera();
+		
+		captureBtn.addEventListener("click", function() {
+			capturePicture();
+			stopCamera();
+		});
+	</script>
+</body>
+</html>
