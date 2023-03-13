@@ -19,6 +19,10 @@
 			width: 80%;
 			height: 80%;
 			border: 2px solid black;
+			background-image: url("frame.png"); /* replace with your own frame image */
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center center;
 		}
 	</style>
 </head>
@@ -27,6 +31,13 @@
 		<h1>Take a Picture with a Frame</h1>
 	</header>
 	<main>
+		<label for="image-select">Select an Image:</label>
+		<select id="image-select">
+			<option value="">-- Select --</option>
+			<option value="image1.jpg">Image 1</option>
+			<option value="image2.jpg">Image 2</option>
+			<option value="image3.jpg">Image 3</option>
+		</select>
 		<div id="camera-container">
 			<video id="camera-view"></video>
 			<div id="frame-overlay"></div>
@@ -39,6 +50,7 @@
 		const captureBtn = document.querySelector("#capture-btn");
 		const pictureCanvas = document.querySelector("#picture-canvas");
 		const frameOverlay = document.querySelector("#frame-overlay");
+		const imageSelect = document.querySelector("#image-select");
 		
 		const constraints = {
 			video: true
@@ -66,6 +78,15 @@
 			context.drawImage(cameraView, 0, 0, pictureCanvas.width, pictureCanvas.height);
 			context.drawImage(frameOverlay, 0, 0, pictureCanvas.width, pictureCanvas.height);
 		}
+		
+		imageSelect.addEventListener("change", function() {
+			const imageUrl = this.value;
+			if (imageUrl) {
+				frameOverlay.style.backgroundImage = "url(" + imageUrl + ")";
+			} else {
+				frameOverlay.style.backgroundImage = "none";
+			}
+		});
 		
 		startCamera();
 		
