@@ -19,10 +19,20 @@
 			width: 80%;
 			height: 80%;
 			border: 2px solid black;
-			background-image: url("frame.png"); /* replace with your own frame image */
 			background-repeat: no-repeat;
 			background-size: contain;
 			background-position: center center;
+		}
+		.image-container {
+			display: inline-block;
+			width: 150px;
+			height: 150px;
+			margin: 10px;
+			border: 2px solid black;
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center center;
+			cursor: pointer;
 		}
 	</style>
 </head>
@@ -31,28 +41,27 @@
 		<h1>Frame Camera</h1>
 	</header>
 	<main>
-		<label for="frame-select">Select a Frame:</label>
-		<select id="frame-select">
-			<option value="">-- Select --</option>
-			<option value="frame1.png">Frame 1</option>
-			<option value="frame2.png">Frame 2</option>
-			<option value="frame3.png">Frame 3</option>
-		</select>
-		<div id="camera-container">
+		<div id="image-list">
+			<div class="image-container" data-frame="frame1.png"></div>
+			<div class="image-container" data-frame="frame2.png"></div>
+			<div class="image-container" data-frame="frame3.png"></div>
+		</div>
+		<div id="camera-container" style="display: none;">
 			<video id="camera-view"></video>
 			<div id="frame-overlay"></div>
 		</div>
-		<button id="capture-btn">Capture Picture</button>
-		<canvas id="picture-canvas"></canvas>
-		<a id="download-link" download="picture.png" href="#">Download Picture</a>
+		<button id="capture-btn" style="display: none;">Capture Picture</button>
+		<canvas id="picture-canvas" style="display: none;"></canvas>
+		<a id="download-link" download="picture.png" href="#" style="display: none;">Download Picture</a>
 	</main>
 	<script>
 		const cameraView = document.querySelector("#camera-view");
 		const captureBtn = document.querySelector("#capture-btn");
 		const pictureCanvas = document.querySelector("#picture-canvas");
 		const frameOverlay = document.querySelector("#frame-overlay");
-		const frameSelect = document.querySelector("#frame-select");
+		const imageList = document.querySelector("#image-list");
 		const downloadLink = document.querySelector("#download-link");
+		let selectedFrame = null;
 		
 		const constraints = {
 			video: true
@@ -62,6 +71,7 @@
 			navigator.mediaDevices.getUserMedia(constraints)
 				.then(function(stream) {
 					cameraView.srcObject = stream;
+					document.querySelector("#camera-container").style.display = "block";
 				})
 				.catch(function(error) {
 					console.error("Unable to access camera: " + error);
@@ -73,6 +83,7 @@
 				track.stop();
 			});
 			cameraView.srcObject = null;
+			document.querySelector("#camera-container").style.display = "none";
 		}
 		
 		function capturePicture() {
@@ -81,22 +92,42 @@
 			context.drawImage(frameOverlay, 0, 0, pictureCanvas.width, pictureCanvas.height);
 			downloadLink.href = pictureCanvas.toDataURL();
 			downloadLink.style.display = "inline-block";
+			document.querySelector("#capture-btn").style.display = "none";
+			document.querySelector("#image-list").style.display = "block";
+			stopCamera();
 		}
 		
-		frameSelect.addEventListener("change", function() {
-			const frameUrl = this.value;
-			if (frameUrl) {
-				frameOverlay.style.backgroundImage = "url(" + frameUrl + ")";
-			} else {
-				frameOverlay.style.backgroundImage = "none";
+		function selectFrame(frame) {
+			selectedFrame = frame;
+			const confirmation = confirm("Do you want to start the camera to take a picture with this frame?");
+			if (confirmation) {
+				startCamera();
 			}
+		}
+		
+		imageList.querySelectorAll(".image-container").forEach(function(container) {
+			const frame = container.getAttribute("data-frame");
+			container.style.backgroundImage = "url(" + frame + ")";
+			container.addEventListener("click", function() {
+				selectFrame(frame);
+			});
 		});
 		
-		startCamera();
+		cameraView.addEventListener("canplay", function() {
+			const width = cameraView.videoWidth;
+			const height = cameraView.videoHeight;
+			frameOverlay.style.backgroundImage = "url(" + selectedFrame + ")";
+			frameOverlay.style.display = "block";
+			frameOverlay.style.width = width + "px";
+			frameOverlay.style.height = height + "px";
+			pictureCanvas.width = width;
+			pictureCanvas.height = height;
+			captureBtn.style.display = "inline-block";
+			imageList.style.display = "none";
+		});
 		
 		captureBtn.addEventListener("click", function() {
 			capturePicture();
-			stopCamera();
 		});
 	</script>
 </body>
