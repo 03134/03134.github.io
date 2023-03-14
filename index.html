@@ -92,10 +92,11 @@
 			context.drawImage(frameOverlay, 0, 0, pictureCanvas.width, pictureCanvas.height);
 			downloadLink.href = pictureCanvas.toDataURL();
 			downloadLink.style.display = "inline-block";
-			document.querySelector("#capture-btn").style.display = "none";
-			document.querySelector("#image-list").style.display = "block";
+			captureBtn.style.display = "none";
+			imageList.style.display = "block";
 			stopCamera();
 		}
+
 		
 		function selectFrame(frame) {
 			selectedFrame = frame;
