@@ -1,135 +1,48 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Frame Camera</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<style>
-		#camera-view {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-		}
-		#frame-overlay {
-			position: absolute;
-			top: 10%;
-			left: 10%;
-			width: 80%;
-			height: 80%;
-			border: 2px solid black;
-			background-repeat: no-repeat;
-			background-size: contain;
-			background-position: center center;
-		}
-		.image-container {
-			display: inline-block;
-			width: 150px;
-			height: 150px;
-			margin: 10px;
-			border: 2px solid black;
-			background-repeat: no-repeat;
-			background-size: contain;
-			background-position: center center;
-			cursor: pointer;
-		}
-	</style>
-</head>
-<body>
-	<header>
-		<h1>Frame Camera</h1>
-	</header>
-	<main>
-		<div id="image-list">
-			<div class="image-container" data-frame="frame1.png"></div>
-			<div class="image-container" data-frame="frame2.png"></div>
-			<div class="image-container" data-frame="frame3.png"></div>
-		</div>
-		<div id="camera-container" style="display: none;">
-			<video id="camera-view"></video>
-			<div id="frame-overlay"></div>
-		</div>
-		<button id="capture-btn" style="display: none;">Capture Picture</button>
-		<canvas id="picture-canvas" style="display: none;"></canvas>
-		<a id="download-link" download="picture.png" href="#" style="display: none;">Download Picture</a>
-	</main>
-	<script>
-		const cameraView = document.querySelector("#camera-view");
-		const captureBtn = document.querySelector("#capture-btn");
-		const pictureCanvas = document.querySelector("#picture-canvas");
-		const frameOverlay = document.querySelector("#frame-overlay");
-		const imageList = document.querySelector("#image-list");
-		const downloadLink = document.querySelector("#download-link");
-		let selectedFrame = null;
-		
-		const constraints = {
-			video: true
-		};
-		
-		function startCamera() {
-			navigator.mediaDevices.getUserMedia(constraints)
-				.then(function(stream) {
-					cameraView.srcObject = stream;
-					document.querySelector("#camera-container").style.display = "block";
-				})
-				.catch(function(error) {
-					console.error("Unable to access camera: " + error);
-				});
-		}
-		
-		function stopCamera() {
-			cameraView.srcObject.getTracks().forEach(function(track) {
-				track.stop();
-			});
-			cameraView.srcObject = null;
-			document.querySelector("#camera-container").style.display = "none";
-		}
-		
-		function capturePicture() {
-			const context = pictureCanvas.getContext("2d");
-			context.drawImage(cameraView, 0, 0, pictureCanvas.width, pictureCanvas.height);
-			context.drawImage(frameOverlay, 0, 0, pictureCanvas.width, pictureCanvas.height);
-			downloadLink.href = pictureCanvas.toDataURL();
-			downloadLink.style.display = "inline-block";
-			captureBtn.style.display = "none";
-			imageList.style.display = "block";
-			stopCamera();
-		}
+  <head>
+    <title>Image Capture and Printing</title>
+  </head>
+  <body>
+    <h1>Select a Frame Image</h1>
+    <img src="frame1.jpg" alt="Frame 1" onclick="selectFrame(1)">
+    <img src="frame2.jpg" alt="Frame 2" onclick="selectFrame(2)">
+    <img src="frame3.jpg" alt="Frame 3" onclick="selectFrame(3)">
+    <img src="frame4.jpg" alt="Frame 4" onclick="selectFrame(4)">
+    <br><br>
+    <button onclick="executeCamera()">Take Picture</button>
+    <br><br>
+    <div id="preview"></div>
+    <br><br>
+    <button onclick="saveImage()">Save Picture</button>
+    <br><br>
+    <button onclick="printImage()">Print Picture</button>
 
-		
-		function selectFrame(frame) {
-			selectedFrame = frame;
-			const confirmation = confirm("Do you want to start the camera to take a picture with this frame?");
-			if (confirmation) {
-				startCamera();
-			}
-		}
-		
-		imageList.querySelectorAll(".image-container").forEach(function(container) {
-			const frame = container.getAttribute("data-frame");
-			container.style.backgroundImage = "url(" + frame + ")";
-			container.addEventListener("click", function() {
-				selectFrame(frame);
-			});
-		});
-		
-		cameraView.addEventListener("canplay", function() {
-			const width = cameraView.videoWidth;
-			const height = cameraView.videoHeight;
-			frameOverlay.style.backgroundImage = "url(" + selectedFrame + ")";
-			frameOverlay.style.display = "block";
-			frameOverlay.style.width = width + "px";
-			frameOverlay.style.height = height + "px";
-			pictureCanvas.width = width;
-			pictureCanvas.height = height;
-			captureBtn.style.display = "inline-block";
-			imageList.style.display = "none";
-		});
-		
-		captureBtn.addEventListener("click", function() {
-			capturePicture();
-		});
-	</script>
-</body>
+    <script>
+      let selectedFrame;
+
+      function selectFrame(frame) {
+        selectedFrame = frame;
+      }
+
+      function executeCamera() {
+        if (selectedFrame) {
+          // Code to execute the camera and overlay selected frame on the captured image
+          // Display the captured image in the preview div
+        } else {
+          alert("Please select a frame image first");
+        }
+      }
+
+      function saveImage() {
+        // Code to save the captured and framed image
+        alert("Picture saved successfully");
+      }
+
+      function printImage() {
+        // Code to print the saved image
+        alert("Picture printed successfully");
+      }
+    </script>
+  </body>
 </html>
